@@ -7,7 +7,7 @@ needs to be replaced if an online version - engine the same
 imports
 """
 import pygame as p
-import chess_engine
+import Chess.chess_engine
 
 """
 constants
