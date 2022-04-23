@@ -7,7 +7,7 @@ needs to be replaced if an online version - engine the same
 imports
 """
 import pygame as p
-import Chess.chess_engine
+import Chess.chess_engine as ce
 
 """
 constants
@@ -57,7 +57,7 @@ def main():
     # screen.fill(p.Color("white"))
     loadImage()
     clock = p.time.Clock()
-    gs = chess_engine.GameState()
+    gs = ce.GameState()
 
     validMoves = gs.getValidMoves() # get a list of possible moves
     moveMade = False # track when a move is made
@@ -83,7 +83,7 @@ def main():
                     sqSelected= (row, col)
                     playerClicks.append(sqSelected) #append first and second click
                 if len(playerClicks) == 2: #selected piece and move
-                    move= chess_engine.Move(playerClicks[0],playerClicks[1], gs.board)
+                    move= ce.Move(playerClicks[0],playerClicks[1], gs.board)
                     print(move.getChessNotation())
                     if move in validMoves:
                         gs.makeMove(move)
