@@ -44,6 +44,7 @@ class GameState:
         self.checks = []
         self.checkmate = False
         self.stalemate = False
+        self.enpassantPossible = () # coordinates for the square where an enpassant is possible
 
 
     def makeMove(self, move):
@@ -61,7 +62,7 @@ class GameState:
             
         # pawn promotion
         if move.isPawnPromotion:
-            self.board[move.endRow][move.endCol] = move.pieceMoved[0]+"Q"
+            self.board[move.endRow][move.endCol] = move.pieceMoved[0]+"Q" # modify if you want to give option of other pieces
 
             
 
@@ -462,17 +463,16 @@ class Move:
     rowsToRanks = {v: k for k, v in ranksToRows.items()}
     colsToFiles = {v: k for k, v in filesToCols.items()}
 
-    def __init__(self, startSq, endSq, board):
+    def __init__(self, startSq, endSq, board, enpassantPossible = ()):
         self.startRow = startSq[0]
         self.startCol = startSq[1]
         self.endRow = endSq[0]
         self.endCol = endSq[1]
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]  # piece captured can be blank
-        self.isPawnPromotion = False
-        if (self.pieceMoved == "wP" and self.endRow == 0) or (self.pieceMoved == "bP" and self.endRow ==7):
-            self.isPawnPromotion = True
-            
+        self.isPawnPromotion = (self.pieceMoved == "wP" and self.endRow == 0) or (self.pieceMoved == "bP" and self.endRow ==7)
+        self.isEnpassantMove = (self.pieceMoved[1] == "P" and (self.endRow, self.endCol) == enpassantPossible)
+        
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
 
     def __eq__(self, other):
