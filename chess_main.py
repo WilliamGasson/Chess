@@ -15,7 +15,7 @@ __version__ = "0.1"
 # -----------------------------------------------------------------------------
 
 import pygame as p
-import Chess.chess_engine as ce
+import chess_engine as ce
 
 
 # %% --------------------------------------------------------------------------
@@ -106,12 +106,13 @@ def main():
                 if len(playerClicks) == 2:  # selected piece and move
                     move = ce.Move(playerClicks[0], playerClicks[1], gs.board)
                     print(move.getChessNotation())
-                    if move in validMoves:
-                        gs.makeMove(move)
-                        moveMade = True
-                        sqSelected = ()  # deselect
-                        playerClicks = []  # clear
-                    else:
+                    for i in range(len(validMoves)):
+                        if move == validMoves[i]:
+                            gs.makeMove(validMoves[i])
+                            moveMade = True
+                            sqSelected = ()  # deselect
+                            playerClicks = []  # clear
+                    if not moveMade:
                         playerClicks = [sqSelected]
 
             # tracking keyboard
