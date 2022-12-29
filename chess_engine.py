@@ -504,7 +504,7 @@ class GameState:
                     if r + moveAmount == backRow: # if pawn gets to back row it will promote
                         pawnPromotion = True
                     moves.append(Move((r, c), (r + moveAmount, c + 1), self.board, isPawnPromotion = pawnPromotion))
-                if (r + moveAmount, c - 1) == self.enpassantPossible:
+                if (r + moveAmount, c + 1) == self.enpassantPossible:
                     moves.append(Move((r, c), (r + moveAmount, c + 1), self.board, isEnpassantMove = True))
 
             
