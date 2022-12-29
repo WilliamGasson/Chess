@@ -11,3 +11,15 @@ Code to create a chess game
 2. Also checking and check mating don't work properly
 3. Adding a machine learning engine that allows you to play the computer.
 4. Alternative version of chess_main for online version - the engine can be the same.
+
+
+## Bugs
+### Checks
+1. seems to be in check from its own knights
+2. Can move king towards checking piece
+3. Can enpassant into check
+
+## Other
+
+1. No castling
+
