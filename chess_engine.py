@@ -298,26 +298,7 @@ class GameState:
         for move in oppMoves:
             if move.endRow == r and move.endCol == c:  # square is being attacked
                 return True
-        return False
-
-    def updateCastleRights(self, move):
-        if move.pieceMoved == "wK":
-            self.currentCastleRights.wks = False
-            self.currentCastleRights.wqs = False
-        elif move.pieceMoved == "bK":
-            self.currentCastleRights.bks = False
-            self.currentCastleRights.bqs = False        
-        elif move.pieceMoved == "wR":
-            if move.startRow == 7:
-                if move.startCol == 7: 
-                    self.currentCastleRights.wks = False
-                elif move.startCol == 0:
-                    self.currentCastleRights.wqs = False        
-        elif move.pieceMoved == "bR":
-                if move.startCol == 7: 
-                    self.currentCastleRights.bks = False
-                elif move.startCol == 0:
-                    self.currentCastleRights.bqs = False            
+        return False        
     
     def getKingMoves(self, r, c, moves):
         rowMoves = (-1,-1,-1,0,0,1,1,1)
@@ -363,6 +344,26 @@ class GameState:
         if self.board[r][c-1] == "--" and self.board[r][c-2] == "--" and self.board[r][c-3] == "--":
             if not self.squareUnderAttack(r, c - 1) and not self.squareUnderAttack(r, c - 2):
                 moves.append(Move((r,c), (r, c - 2),self.board), isCastleMove = True)
+                
+                
+    def updateCastleRights(self, move):
+        if move.pieceMoved == "wK":
+            self.currentCastleRights.wks = False
+            self.currentCastleRights.wqs = False
+        elif move.pieceMoved == "bK":
+            self.currentCastleRights.bks = False
+            self.currentCastleRights.bqs = False        
+        elif move.pieceMoved == "wR":
+            if move.startRow == 7:
+                if move.startCol == 7: 
+                    self.currentCastleRights.wks = False
+                elif move.startCol == 0:
+                    self.currentCastleRights.wqs = False        
+        elif move.pieceMoved == "bR":
+                if move.startCol == 7: 
+                    self.currentCastleRights.bks = False
+                elif move.startCol == 0:
+                    self.currentCastleRights.bqs = False    
                                 
     def getQueenMoves(self, r, c, moves):
 
