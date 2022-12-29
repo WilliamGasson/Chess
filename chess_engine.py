@@ -82,7 +82,7 @@ class GameState:
             promotedPiece = input("Promote to Q, R, B or N:") # can add UI to make it better
             self.board[move.endRow][move.endCol] = move.pieceMoved[0] + promotedPiece # modify if you want to give option of other pieces
 
-        self.updateCastleRights(move)
+        self.updateCastlingRights(move)
         self.castleRightsLog.append(CastleRights(self.whiteCastleKingSide, self.blackCastleKingSide, self.whiteCastleQueenSide, self.blackCastleQueenSide))
 
         if move.castle:
@@ -156,7 +156,7 @@ class GameState:
                             break 
                 for i in range(len(moves) - 1, -1, -1): # go through list backward as removing items from list
                     if moves[i].pieceMoved[1] != "K":
-                        if not (moves[i].endrow,moves[i].endCol) in validSquares:
+                        if not (moves[i].endRow,moves[i].endCol) in validSquares:
                             moves.remove(moves[i])                  
             else: # double check
                 self.getKingMoves(kingRow, kingCol, moves)
@@ -459,7 +459,7 @@ class GameState:
         for i in range(len(self.pins)-1,-1,-1):
             if self.pins[i][0] == r and self.pins[i][1] == c:
                 piecePinned = True
-                pinDirection = (self.pins[i][2], self.pins[i]][3])
+                pinDirection = (self.pins[i][2], self.pins[i][3])
                 self.pins.remove(self.pins[i])
                 break
          
