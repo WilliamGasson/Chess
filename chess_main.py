@@ -117,6 +117,7 @@ def main():
 
             # tracking keyboard
             elif e.type == p.KEYDOWN:
+                # Z undos move
                 if e.key == p.K_z:
                     gs.undoMove()
                     moveMade = True
