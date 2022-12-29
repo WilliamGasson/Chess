@@ -7,10 +7,11 @@ Code to create a chess game
 2. chess_engine stores state data for the game, calcuates valid moves and move log.
 
 ## Improvements to be made
-1. Adding enpassen / pawn promotion / castling need to be added.
-2. Also checking and check mating don't work properly
-3. Adding a machine learning engine that allows you to play the computer.
-4. Alternative version of chess_main for online version - the engine can be the same.
+1. Adding pawn promotion of non queen
+2. Adding Castling
+3. Also checking and check mating don't work properly
+4. Adding a machine learning engine that allows you to play the computer.
+5. Alternative version of chess_main for online version - the engine can be the same.
 
 
 ## Bugs
