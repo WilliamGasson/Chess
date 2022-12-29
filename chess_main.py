@@ -43,70 +43,6 @@ def loadImage():
         IMAGES[piece] = p.transform.scale(IMAGES[piece], (SQ_SIZE, SQ_SIZE))
 
 
-
-
-
-# %% --------------------------------------------------------------------------
-# Draw board
-# -----------------------------------------------------------------------------
-
-def drawBoard(screen):
-    # Set the colours of the board
-    colours = [p.Color("white"), p.Color("gray")]
-    # Loop through the squares
-    for r in range(DIMENSION):
-        for c in range(DIMENSION):
-            # draw squares
-            colour = colours[((r + c) % 2)]
-            p.draw.rect(
-                screen, colour, p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE)
-            )
-           
-
-# %% --------------------------------------------------------------------------
-# Highlight square selected and move for pieces selected
-# -----------------------------------------------------------------------------
-def highlightSquares(screen, gs, validMoves, sqSelected):
-    if sqSelected != ():
-        r,c =sqSelected
-        if gs.board[r][c][0] == ("w" if gs.whiteToMove else "b"): # sqSelected is a piece you can move
-            # highlight selected square
-            s = p.Surface((SQ_SIZE,SQ_SIZE))
-            s.set_alpha(100) # 0 transparent, 255 opaque
-            s.fill(p.Color("blue"))
-            screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
-            # highlight valid squares
-            s.fill(p.Color("green"))
-            for move in validMoves:
-                if move.startRow == r and move.startCol == c:
-                    screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
-
-# %% --------------------------------------------------------------------------
-# Draw the pieces
-# -----------------------------------------------------------------------------
-
-def drawPieces(screen, gs):
-    # Loop through the squares
-    for r in range(DIMENSION):
-        for c in range(DIMENSION):
-            # draw pieces
-            piece = gs.board[r][c]
-            if piece != "--":
-                screen.blit(
-                    IMAGES[piece], p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE)
-                )
-
-# %% --------------------------------------------------------------------------
-# Draw the current state
-# -----------------------------------------------------------------------------
-
-
-def drawGameSate(screen, gs, validMoves, sqSelected):
-    # Set the colours of the board
-    drawBoard(screen)
-    highlightSquares(screen, gs, validMoves, sqSelected)
-    drawPieces(screen, gs)
-
 # %% --------------------------------------------------------------------------
 # Main driver, user inputs and graphics
 # -----------------------------------------------------------------------------
@@ -163,12 +99,105 @@ def main():
                     moveMade = True
 
         if moveMade:
+            animateMove(gs.moveLog[-1], screen, gs.board, clock)
             validMoves = gs.getValidMoves()
             moveMade = False
 
         drawGameSate(screen, gs, validMoves, sqSelected)
         clock.tick(MAX_FPS)
         p.display.flip()
+
+
+
+# %% --------------------------------------------------------------------------
+# Draw board
+# -----------------------------------------------------------------------------
+
+def drawBoard(screen):
+    # Set the colours of the board
+    global colours 
+    colours = [p.Color("white"), p.Color("gray")]
+    # Loop through the squares
+    for r in range(DIMENSION):
+        for c in range(DIMENSION):
+            # draw squares
+            colour = colours[((r + c) % 2)]
+            p.draw.rect(
+                screen, colour, p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+            )
+           
+
+# %% --------------------------------------------------------------------------
+# Highlight square selected and move for pieces selected
+# -----------------------------------------------------------------------------
+
+def highlightSquares(screen, gs, validMoves, sqSelected):
+    if sqSelected != ():
+        r,c =sqSelected
+        if gs.board[r][c][0] == ("w" if gs.whiteToMove else "b"): # sqSelected is a piece you can move
+            # highlight selected square
+            s = p.Surface((SQ_SIZE,SQ_SIZE))
+            s.set_alpha(100) # 0 transparent, 255 opaque
+            s.fill(p.Color("blue"))
+            screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
+            # highlight valid squares
+            s.fill(p.Color("green"))
+            for move in validMoves:
+                if move.startRow == r and move.startCol == c:
+                    screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
+
+# %% --------------------------------------------------------------------------
+# Draw the pieces
+# -----------------------------------------------------------------------------
+
+def drawPieces(screen, board):
+    # Loop through the squares
+    for r in range(DIMENSION):
+        for c in range(DIMENSION):
+            # draw pieces
+            piece = board[r][c]
+            if piece != "--":
+                screen.blit(
+                    IMAGES[piece], p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+                )
+
+
+# %% --------------------------------------------------------------------------
+# Animate moves
+# -----------------------------------------------------------------------------
+def animateMove(move, screen, board, clock):
+    global colours
+    dR = move.endRow - move.startRow
+    dC = move.endCol - move.startCol
+    framesPerSqare = 5
+    frameCount = (abs(dR)+abs(dC)) * framesPerSqare
+    for frame in range(frameCount + 1):
+        r, c = (move.startRow + dR*frame/frameCount, move.startCol + dC*frame/frameCount)
+        drawBoard(screen)
+        drawPieces(screen, board)
+        # erase from end square
+        colour = colours[(move.endRow + move.endCol)%2]
+        endSquare = p.Rect(move.endCol*SQ_SIZE, move.endRow*SQ_SIZE,SQ_SIZE,SQ_SIZE)
+        p.draw.rect(screen,colour, endSquare)
+        # draw captured piece until the other piece reaches it
+        if move.pieceCaptured != "--":
+            screen.blit(IMAGES[move.pieceCaptured], endSquare)
+        #draw moving piece
+        screen.blit(IMAGES[move.pieceMoved], p.Rect(c*SQ_SIZE,r*SQ_SIZE, SQ_SIZE,SQ_SIZE))
+        p.display.flip()
+        clock.tick(60)
+
+
+# %% --------------------------------------------------------------------------
+# Draw the current state
+# -----------------------------------------------------------------------------
+
+
+def drawGameSate(screen, gs, validMoves, sqSelected):
+    # Set the colours of the board
+    drawBoard(screen)
+    highlightSquares(screen, gs, validMoves, sqSelected)
+    drawPieces(screen, gs.board)
 
 
 if __name__ == "__main__":

@@ -324,7 +324,7 @@ class GameState:
                     else:
                         self.blackKingLocation = (r,c)
     
-    def getCastleMoves(self, r, c, moves, allyColour):
+    def getCastleMoves(self, r, c, moves):
         if self.squareUnderAttack(r, c):
             return # cant castle in check
         if (self.whiteToMove and self.currentCastleRights.wks) or (not self.whiteToMove and self.currentCastleRights.bks):
