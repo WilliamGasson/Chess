@@ -9,9 +9,10 @@ __author__ = "WilliamGasson"
 __version__ = "0.1"
 
 
-## TODO
-## fix check and checkmate
-
+## TODO fix check and checkmate
+## TODO add a bot
+## TODO reinforcement learning bot
+## TODO add to website
 
 # %% --------------------------------------------------------------------------
 # GameState class
@@ -40,6 +41,8 @@ class GameState:
             "P": self.getPawnMoves,
         }
         self.whiteToMove = True
+        # TODO self.allyColour 
+        # TODO self.enemyColour
         self.moveLog = []
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
@@ -141,6 +144,7 @@ class GameState:
 
         moves = []
         self.inCheck, self.pins, self.checks = self.checkForPinsAndChecks()
+        print(self.inCheck, self.pins, self.checks)
         if self.whiteToMove:
             kingRow = self.whiteKingLocation[0]
             kingCol = self.whiteKingLocation[1]
@@ -217,7 +221,7 @@ class GameState:
         if self.whiteToMove:
             enemyColour = "b"
             allyColour = "w"
-            startRow = self.whiteKingLocation[0]
+            startRow = self.whiteKingLocation[0] # TODO compress into one row
             startCol = self.whiteKingLocation[1]
         else:
             enemyColour = "w"
@@ -225,22 +229,16 @@ class GameState:
             startRow = self.blackKingLocation[0]
             startCol = self.blackKingLocation[1]
         # Check outwards from the king for pins and checks
-        directions = ((-1,0),
-                      (0,-1),
-                      (1,0),
-                      (0,1),
-                      (-1,-1),
-                      (-1,1),
-                      (1,-1),
-                      (1,1))
+        directions = ((-1,0), (0,-1), (1,0), (0,1),
+                      (-1,-1), (-1,1), (1,-1), (1,1))
         
         for j in range(len(directions)):
             d= directions[j]
             possiblePin = () 
             for i in range(1,8): 
-                endRow = startRow +d[0]*i
-                endCol = startRow + d[1]*i
-                if 0 <= endRow < 8 and 0 <= endCol <8:
+                endRow = startRow +d[0] * i
+                endCol = startCol + d[1] * i
+                if 0 <= endRow < 8 and 0 <= endCol < 8:
                     endPiece = self.board[endRow][endCol]
                     if endPiece[0] == allyColour and endPiece[1] != "K":
                         if possiblePin == (): # 1st allied pin so could be pinned
@@ -285,7 +283,7 @@ class GameState:
                 if endPiece[0] == enemyColour and endPiece[1] =="N":
                     inCheck = True
                     checks.append((endRow,endCol, m[0], m[1]))
-        return inCheck, pins,checks
+        return inCheck, pins, checks
                                        
     def incheck(self):
         if self.whiteToMove:
@@ -332,26 +330,23 @@ class GameState:
     
     def getCastleMoves(self, r, c, moves):
         if self.squareUnderAttack(r, c):
-            return # cant castle in check
+            return # Can't castle in check
         if (self.whiteToMove and self.currentCastleRights.wks) or (not self.whiteToMove and self.currentCastleRights.bks):
             self.getKingSideCastleMoves(r, c, moves)
             
         if (self.whiteToMove and self.currentCastleRights.wqs) or (not self.whiteToMove and self.currentCastleRights.bqs):
             self.getQueenSideCastleMoves(r, c, moves)
     
-    # TODO may not need allyColour
     def getKingSideCastleMoves(self, r, c, moves): 
         if self.board[r][c+1] == "--" and self.board[r][c+2] == "--":
             if not self.squareUnderAttack(r, c+1) and not self.squareUnderAttack(r, c + 2):
                 moves.append(Move((r,c), (r, c+2),self.board, isCastleMove = True))
             
-    
     def getQueenSideCastleMoves(self, r, c, moves):
         if self.board[r][c-1] == "--" and self.board[r][c-2] == "--" and self.board[r][c-3] == "--":
             if not self.squareUnderAttack(r, c - 1) and not self.squareUnderAttack(r, c - 2):
                 moves.append(Move((r,c), (r, c - 2),self.board, isCastleMove = True))
-                
-                
+                      
     def updateCastleRights(self, move):
         if move.pieceMoved == "wK":
             self.currentCastleRights.wks = False
@@ -370,19 +365,13 @@ class GameState:
                     self.currentCastleRights.bks = False
                 elif move.startCol == 0:
                     self.currentCastleRights.bqs = False    
-                                
+    
+    ## TODO add pins for queen                            
     def getQueenMoves(self, r, c, moves):
 
-        directions = (
-            (-1, -1),
-            (1, -1),
-            (1, 1),
-            (-1, 1),
-            (-1, 0),
-            (0, -1),
-            (1, 0),
-            (0, 1),
-        )  # up left down right
+        directions = ((-1, -1),(1, -1),(1, 1),(-1, 1),
+                      (-1, 0),(0, -1),(1, 0),(0, 1),)  # up left down right
+        
         enemyColour = "b" if self.whiteToMove else "w"
         for d in directions:
             for i in range(1, 8):  # loop through directions
