@@ -368,6 +368,16 @@ class GameState:
     
     ## TODO add pins for queen                            
     def getQueenMoves(self, r, c, moves):
+        
+        piecePinned = False
+        pinDirection = ()
+        for i in range(len(self.pins)-1,-1,-1):
+            if self.pins[i][0] == r and self.pins[i][1] == c:
+                piecePinned = True
+                pinDirection = (self.pins[i][2], self.pins[i][3])
+                self.pins.remove(self.pins[i])
+                break
+
 
         directions = ((-1, -1),(1, -1),(1, 1),(-1, 1),
                       (-1, 0),(0, -1),(1, 0),(0, 1),)  # up left down right
@@ -378,13 +388,16 @@ class GameState:
                 endRow = r + d[0] * i
                 endCol = c + d[1] * i
                 if 0 <= endRow < 8 and 0 <= endCol < 8:  # only check the board
-                    endPiece = self.board[endRow][endCol]
-                    if endPiece == "--":  # no piece so keep searching
-                        moves.append(Move((r, c), (endRow, endCol), self.board))
-                    elif endPiece[0] == enemyColour:  # a piece you can capture
-                        moves.append(Move((r, c), (endRow, endCol), self.board))
-                        break
-                    else:  # piece you can't take
+                    if not piecePinned or pinDirection == d or pinDirection == (-d[0],-d[1]):
+                        endPiece = self.board[endRow][endCol]
+                        if endPiece == "--":  # no piece so keep searching
+                            moves.append(Move((r, c), (endRow, endCol), self.board))
+                        elif endPiece[0] == enemyColour:  # a piece you can capture
+                            moves.append(Move((r, c), (endRow, endCol), self.board))
+                            break
+                        else:  # piece you can't take
+                            break
+                    else:  # piece pinned
                         break
                 else:  #  off the board
                     break
@@ -416,8 +429,10 @@ class GameState:
                             break
                         else:  # piece you can't take
                             break
-                    else:  #  off the board
+                    else:  # piece pinned
                         break
+                else:  #  off the board
+                    break
 
     def getKnightMoves(self, r, c, moves):
         
