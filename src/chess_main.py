@@ -74,7 +74,7 @@ def main():
     gameOver = False
 
     # 
-    playerOne = False # if human play white, this will be true, if ai it will be false
+    playerOne = True # if human play white, this will be true, if ai it will be false
     playerTwo = False # if human is plying black this will be true
 
     running = True
@@ -191,10 +191,18 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
             s.fill(p.Color("blue"))
             screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
             # highlight valid squares
-            s.fill(p.Color("green"))
             for move in validMoves:
+                
                 if move.startRow == r and move.startCol == c:
-                    screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
+                    if gs.board[move.endRow][move.endCol] == "--":
+                        s.fill(p.Color("green"))
+                        screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
+                    else:
+                        s.fill(p.Color("red"))
+                        screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
+
+
+                
 
 # %% --------------------------------------------------------------------------
 # Draw the pieces
