@@ -130,7 +130,8 @@ class GameState:
             
             # give back castle rights
             self.castleRightsLog.pop() # remove castling rights from log
-            self.currentCastleRights = self.castleRightsLog[-1] # set rights to the new last entry of log
+            newRights = self.castleRightsLog[-1]
+            self.currentCastleRights = CastleRights(newRights.wks, newRights.bks, newRights.wqs, newRights.bqs) # set rights to the new last entry of log
             
             if move.isCastleMove:
                 if move.endCol - move.startCol == 2: # King side
@@ -139,6 +140,9 @@ class GameState:
                 else:
                     self.board[move.endRow][move.endCol-2] = self.board[move.endRow][move.endCol+1] # move rook
                     self.board[move.endRow][move.endCol+1] = "--" # move rook   
+                    
+            self.checkmate = False
+            self.stalemate = False
 
     def getValidMoves(self):
     # Checking move is legal

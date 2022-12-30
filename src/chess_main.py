@@ -73,9 +73,8 @@ def main():
     playerClicks = []  # keeps tack of player clicks - 2 tuples
     gameOver = False
 
-    # 
-    playerOne = True # if human play white, this will be true, if ai it will be false
-    playerTwo = True # if human is plying black this will be true
+    playerOne = False # if human play white, this will be true, if ai it will be false
+    playerTwo = False # if human is plying black this will be true
 
     running = True
     while running:
@@ -116,6 +115,7 @@ def main():
                     gs.undoMove()
                     moveMade = True
                     animate = False
+                    gameOver = False
             
                 if e.key == p.K_r:    # R resets board
                     gs = ce.GameState()
@@ -124,6 +124,7 @@ def main():
                     animate = False # flag variable for when variable should be annimated
                     sqSelected = ()  # keep track of last click - tuple
                     playerClicks = []
+                    gameOver = False
                     
 
         ## AI move finder
