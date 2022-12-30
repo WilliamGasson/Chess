@@ -22,7 +22,7 @@ import random
 pieceScore = {"K":0, "Q":9, "R": 5, "B": 3, "N": 3, "P":1}
 CHECKMATE = 1000
 STALEMATE = 0
-DEPTH = 2
+DEPTH = 3
 
 # %% --------------------------------------------------------------------------
 # Random move computer
@@ -105,9 +105,14 @@ def findMoveMinMaxDepthTwo(gs, validMoves):
 # -----------------------------------------------------------------------------
 
 
-def findBestMoveMinMax(gs, validMoves):
-    global nextMove
-    findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+def findBestMove(gs, validMoves):
+    global nextMove, counter
+    counter = 0
+    random.shuffle(validMoves)
+    #findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+    #findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
+    findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
+    print(counter)
     return nextMove
 
 
@@ -142,12 +147,59 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
             gs.undoMove()
         return minScore   
 
+# minmax but combine black and white
+def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
+    global nextMove, counter
+    counter += 1
+    if depth == 0:
+        return turnMultiplier * scoreMaterial(gs.board)
+    
+    maxScore = -CHECKMATE
+    for move in validMoves:
+        gs.makeMove(move)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMax(gs, nextMoves, depth -1, -turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.undoMove()
+    return maxScore  
+
+# negamax but not searching unnecessary moves
+
+def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
+    global nextMove, counter
+    counter += 1
+    if depth == 0:
+        return turnMultiplier * scoreMaterial(gs.board)
+
+    ## TODO move ordering - look at captures/ checks
+
+    maxScore = -CHECKMATE
+    for move in validMoves:
+        gs.makeMove(move)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMaxAlphaBeta(gs, nextMoves, depth -1, -alpha, -beta,-turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.undoMove()
+        if maxScore > alpha:
+            alpha = maxScore
+        # worse than other branches so prune    
+        if alpha >= beta:
+            break
+    return maxScore  
+
 # %% --------------------------------------------------------------------------
 #  Score the value of piece
 # -----------------------------------------------------------------------------
 ## TODO improve scoring method - position
 ## TODO - position: how many pieces it is attacking, protecting, squares it can move to
 ## TODO checks have more value - evaluate that first
+
 
 def scoreMaterial(board):
     score = 0

@@ -73,8 +73,8 @@ def main():
     playerClicks = []  # keeps tack of player clicks - 2 tuples
     gameOver = False
 
-    playerOne = False # if human play white, this will be true, if ai it will be false
-    playerTwo = False # if human is plying black this will be true
+    playerOne = True # if human play white, this will be true, if ai it will be false
+    playerTwo = True # if human is plying black this will be true
 
     running = True
     while running:
@@ -129,7 +129,7 @@ def main():
 
         ## AI move finder
         if not gameOver and not humanTurn:
-            AIMove = cc.findBestMoveMinMax(gs, validMoves)
+            AIMove = cc.findBestMove(gs, validMoves)
             if AIMove is None:
                 AIMove = cc.findRandomMove(validMoves)
                 
@@ -150,8 +150,10 @@ def main():
         if gs.checkmate:
             gameOver = True
             if gs.whiteToMove:
+                print("Black wins by checkmate")
                 drawText(screen, "Black wins by checkmate")
             else:
+                print("Black wins by checkmate")
                 drawText(screen, "White wins by checkmate")
         elif gs.stalemate:
             gameOver = True
@@ -243,6 +245,9 @@ def animateMove(move, screen, board, clock):
         p.draw.rect(screen,colour, endSquare)
         # draw captured piece until the other piece reaches it
         if move.pieceCaptured != "--":
+            if move.isEnpassantMove:
+                enPassantRow = (move.endRow +1) if move.pieceCaptured[0] == "b" else (move.endRow - 1)
+                endSquare = p.Rect(move.endCol*SQ_SIZE, enPassantRow*SQ_SIZE,SQ_SIZE,SQ_SIZE)
             screen.blit(IMAGES[move.pieceCaptured], endSquare)
         #draw moving piece
         screen.blit(IMAGES[move.pieceMoved], p.Rect(c*SQ_SIZE,r*SQ_SIZE, SQ_SIZE,SQ_SIZE))
