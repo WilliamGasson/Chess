@@ -12,6 +12,7 @@ Code to create a chess game
 2. Alternative version of chess_main for online version - the engine can be the same.
 3. Asyncronous ai and ui
 4. Post game analysis
+5. improve scoring method - position
 
 ## UI Improvements
 1. Move log panel
