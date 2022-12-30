@@ -59,8 +59,11 @@ def main():
     validMoves = gs.getValidMoves()  # get a list of possible moves
     moveMade = False  # track when a move is made
 
+    animate = False # flag variable for when variable should be annimated
     sqSelected = ()  # keep track of last click - tuple
     playerClicks = []  # keeps tack of player clicks - 2 tuples
+    gameOver = False
+
 
     running = True
     while running:
@@ -70,38 +73,64 @@ def main():
 
             # tracking mouse
             elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos()  # x,y location of mouse
-                col = location[0] // SQ_SIZE
-                row = location[1] // SQ_SIZE
-                if sqSelected == (row, col):  # select same box twice
-                    sqSelected = ()  # deselect
-                    playerClicks = []  # clear
-                else:
-                    sqSelected = (row, col)
-                    playerClicks.append(sqSelected)  # append first and second click
-                if len(playerClicks) == 2:  # selected piece and move
-                    move = ce.Move(playerClicks[0], playerClicks[1], gs.board)
-                    print(move.getChessNotation())
-                    for i in range(len(validMoves)):
-                        if move == validMoves[i]:
-                            gs.makeMove(validMoves[i])
-                            moveMade = True
-                            sqSelected = ()  # deselect
-                            playerClicks = []  # clear
-                    if not moveMade:
-                        playerClicks = [sqSelected]
+                if not gameOver:
+                    location = p.mouse.get_pos()  # x,y location of mouse
+                    col = location[0] // SQ_SIZE
+                    row = location[1] // SQ_SIZE
+                    if sqSelected == (row, col):  # select same box twice
+                        sqSelected = ()  # deselect
+                        playerClicks = []  # clear
+                    else:
+                        sqSelected = (row, col)
+                        playerClicks.append(sqSelected)  # append first and second click
+                    if len(playerClicks) == 2:  # selected piece and move
+                        move = ce.Move(playerClicks[0], playerClicks[1], gs.board)
+                        print(move.getChessNotation())
+                        for i in range(len(validMoves)):
+                            if move == validMoves[i]:
+                                gs.makeMove(validMoves[i])
+                                moveMade = True
+                                animate = True
+                                sqSelected = ()  # deselect
+                                playerClicks = []  # clear
+                        if not moveMade:
+                            playerClicks = [sqSelected]
 
             # tracking keyboard
             elif e.type == p.KEYDOWN:
-                # Z undos move
-                if e.key == p.K_z:
+                if e.key == p.K_z:    # Z undos move
                     gs.undoMove()
                     moveMade = True
+                    animate = False
+            
+                if e.key == p.K_r:    # R resets board
+                    gs = ce.GameState()
+                    validMoves = gs.getValidMoves()  # get a list of possible moves
+                    moveMade = False  # track when a move is made
+                    animate = False # flag variable for when variable should be annimated
+                    sqSelected = ()  # keep track of last click - tuple
+                    playerClicks = []
+                    
 
         if moveMade:
-            animateMove(gs.moveLog[-1], screen, gs.board, clock)
+            if animate:
+                animateMove(gs.moveLog[-1], screen, gs.board, clock)
             validMoves = gs.getValidMoves()
             moveMade = False
+            animate = False
+        
+        # TODO more efficient to draw when it changes instead of every frame
+        drawGameSate(screen, gs,validMoves, sqSelected)
+        
+        if gs.checkmate:
+            gameOver = True
+            if gs.whiteToMove:
+                drawText(screen, "Black wins by checkmate")
+            else:
+                drawText(screen, "White wins by checkmate")
+        elif gs.stalemate:
+            gameOver = True
+            drawText(screen, "Stalemate")
 
         drawGameSate(screen, gs, validMoves, sqSelected)
         clock.tick(MAX_FPS)
@@ -188,10 +217,23 @@ def animateMove(move, screen, board, clock):
         clock.tick(60)
 
 
+
+# %% --------------------------------------------------------------------------
+# Draw text
+# -----------------------------------------------------------------------------
+
+def drawText(screen, text):
+    font = p.font.SysFont("Helvitca", 32, True, True)
+    textOject = font.render(text, 0, p.Color("Gray"))
+    textLocation = p.Rect(0,0, WIDTH, HEIGHT).move(WIDTH/2 - textOject.get_width()/2, HEIGHT/2 - textOject()/2)
+    screen.blit(textOject, textLocation)
+    textOject = font.render(text, 0, p.Color("Black"))
+    screen.blit(textOject, textLocation.move(2,2))
+
+
 # %% --------------------------------------------------------------------------
 # Draw the current state
 # -----------------------------------------------------------------------------
-
 
 def drawGameSate(screen, gs, validMoves, sqSelected):
     # Set the colours of the board

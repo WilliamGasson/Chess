@@ -9,6 +9,10 @@ __author__ = "WilliamGasson"
 __version__ = "0.1"
 
 
+## TODO
+## fix check and checkmate
+
+
 # %% --------------------------------------------------------------------------
 # GameState class
 # -----------------------------------------------------------------------------
@@ -80,6 +84,7 @@ class GameState:
             promotedPiece = input("Promote to Q, R, B or N:") # can add UI to make it better
             self.board[move.endRow][move.endCol] = move.pieceMoved[0] + promotedPiece # modify if you want to give option of other pieces
         
+        # Castle move
         if move.isCastleMove:
             if move.endCol - move.startCol == 2: # King side
                 self.board[move.endRow][move.endCol-1] = self.board[move.endRow][move.endCol+1] # move rook
@@ -145,9 +150,7 @@ class GameState:
         if self.inCheck:
             if len(self.checks) == 1: # only 1 check, so block check or move king
                 moves = self.getAllPossibleMoves()  
-                 
-                self.getCastleMoves(kingRow,kingCol,moves)                                
-  
+                   
                 # to block check you must move a piece between king and enemy piece
                 check = self.checks[0]
                 checkRow = check[0]
@@ -172,6 +175,9 @@ class GameState:
         else: # not in check
             # Generate possible moves
             moves = self.getAllPossibleMoves()
+            
+            self.getCastleMoves(kingRow,kingCol,moves)                                
+
         
         if len(moves) == 0:
             if self.incheck():
@@ -273,7 +279,7 @@ class GameState:
         for m in knightMoves:
             endRow = startRow +m[0]
             endCol = startCol + m[1]
-            if 0<= endRow<8 and 0<=endRow<8:
+            if 0<= endRow<8 and 0<=endCol<8:
                 endPiece = self.board[endRow][endCol]
                 endPiece = self.board[endRow][endCol]
                 if endPiece[0] == enemyColour and endPiece[1] =="N":
@@ -337,13 +343,13 @@ class GameState:
     def getKingSideCastleMoves(self, r, c, moves): 
         if self.board[r][c+1] == "--" and self.board[r][c+2] == "--":
             if not self.squareUnderAttack(r, c+1) and not self.squareUnderAttack(r, c + 2):
-                moves.append(Move((r,c), (r, c+2),self.board), isCastleMove = True)
+                moves.append(Move((r,c), (r, c+2),self.board, isCastleMove = True))
             
     
     def getQueenSideCastleMoves(self, r, c, moves):
         if self.board[r][c-1] == "--" and self.board[r][c-2] == "--" and self.board[r][c-3] == "--":
             if not self.squareUnderAttack(r, c - 1) and not self.squareUnderAttack(r, c - 2):
-                moves.append(Move((r,c), (r, c - 2),self.board), isCastleMove = True)
+                moves.append(Move((r,c), (r, c - 2),self.board, isCastleMove = True))
                 
                 
     def updateCastleRights(self, move):
