@@ -1,9 +1,18 @@
 """
 chess_main.py
 
-driver file :  handles user inputs, displays board
-needs to be replaced if an online version - engine the same
+Driver file :  handles user inputs, displays board
+
+Based off : https://www.youtube.com/watch?v=EnYui0e73Rs&t=9s&ab_channel=EddieSharick
+
+Inputs : clicks to move pieces
+         z undo move
+         r reset move
+         QRBN select piece for pawn promotion
 """
+
+## TODO fix printing checkmate or stalemate
+
 
 __date__ = "2022-12-28"
 __author__ = "WilliamGasson"
@@ -16,7 +25,7 @@ __version__ = "0.1"
 
 import pygame as p
 import chess_engine as ce
-
+import chess_computer as cc
 
 # %% --------------------------------------------------------------------------
 #  Constants
@@ -38,7 +47,7 @@ def loadImage():
     pieces = ["bR", "bN", "bB", "bQ", "bK", "bP", "wR", "wN", "wB", "wQ", "wK", "wP"]
     for piece in pieces:
         # can call an image by saying IMAGES['wP']
-        IMAGES[piece] = p.image.load("images/{}.png".format(piece))
+        IMAGES[piece] = p.image.load("../images/{}.png".format(piece))
         # scale to correct size for board
         IMAGES[piece] = p.transform.scale(IMAGES[piece], (SQ_SIZE, SQ_SIZE))
 
@@ -64,16 +73,21 @@ def main():
     playerClicks = []  # keeps tack of player clicks - 2 tuples
     gameOver = False
 
+    # 
+    playerOne = False # if human play white, this will be true, if ai it will be false
+    playerTwo = False # if human is plying black this will be true
 
     running = True
     while running:
+        humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
+
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
 
             # tracking mouse
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver:
+                if not gameOver and humanTurn:
                     location = p.mouse.get_pos()  # x,y location of mouse
                     col = location[0] // SQ_SIZE
                     row = location[1] // SQ_SIZE
@@ -112,6 +126,13 @@ def main():
                     playerClicks = []
                     
 
+        ## AI move finder
+        if not gameOver and not humanTurn:
+            AIMove = cc.findRandomMove(validMoves)
+            gs.makeMove(AIMove)
+            moveMade = True
+            animate = True        
+        
         if moveMade:
             if animate:
                 animateMove(gs.moveLog[-1], screen, gs.board, clock)

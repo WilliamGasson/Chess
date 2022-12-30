@@ -8,18 +8,17 @@ Code to create a chess game
 
 ## Improvements to be made
 
-1. Also check mating doesn't display properly
-2. Adding a machine learning engine that allows you to play the computer.
-3. Alternative version of chess_main for online version - the engine can be the same.
+1. Adding a machine learning engine that allows you to play the computer.
+2. Alternative version of chess_main for online version - the engine can be the same.
+3. Asyncronous ai and ui
+4. Post game analysis
 
+## UI Improvements
+1. Move log panel
+2. UI to select pawn promotion
+3. UI start game interface - select who is playing what colour
 
 ## Bugs
-### Checks
 
-1. Can enpassant into check
-2. Can move pinned queen into check
-
-## Other
-
-1. No castling
-
+1. checkmate not displaying
+2. bot asks for what pawn promotion would be

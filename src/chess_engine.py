@@ -2,6 +2,8 @@
 chess_engine.py
 
 Stores state data for the game, calcuates valid moves and move log
+
+Based off : https://www.youtube.com/watch?v=EnYui0e73Rs&t=9s&ab_channel=EddieSharick 
 """
 
 __date__ = "2022-12-28"
@@ -9,7 +11,6 @@ __author__ = "WilliamGasson"
 __version__ = "0.1"
 
 
-## TODO fix check and checkmate
 ## TODO add a bot
 ## TODO reinforcement learning bot
 ## TODO add to website
@@ -144,7 +145,6 @@ class GameState:
 
         moves = []
         self.inCheck, self.pins, self.checks = self.checkForPinsAndChecks()
-        print(self.inCheck, self.pins, self.checks)
         if self.whiteToMove:
             kingRow = self.whiteKingLocation[0]
             kingCol = self.whiteKingLocation[1]
@@ -366,7 +366,6 @@ class GameState:
                 elif move.startCol == 0:
                     self.currentCastleRights.bqs = False    
     
-    ## TODO add pins for queen                            
     def getQueenMoves(self, r, c, moves):
         
         piecePinned = False
