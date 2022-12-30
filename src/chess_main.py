@@ -128,7 +128,7 @@ def main():
 
         ## AI move finder
         if not gameOver and not humanTurn:
-            AIMove = cc.findBestMove(gs, validMoves)
+            AIMove = cc.findBestMoveMinMax(gs, validMoves)
             if AIMove is None:
                 AIMove = cc.findRandomMove(validMoves)
                 

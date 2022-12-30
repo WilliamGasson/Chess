@@ -21,7 +21,7 @@ import random
 
 pieceScore = {"K":0, "Q":9, "R": 5, "B": 3, "N": 3, "P":1}
 CHECKMATE = 1000
-STALEMATE = 0
+STALEMATE = -10
 
 
 # %% --------------------------------------------------------------------------
@@ -36,7 +36,7 @@ def findRandomMove(validMoves):
 #  Best move computer
 # -----------------------------------------------------------------------------
 
-def findBestMove(gs, validMoves):
+def findBestMoveGreedy(gs, validMoves):
     
     turnMultiplier = 1 if gs.whiteToMove else -1 # so you are always maximising
     
@@ -59,6 +59,38 @@ def findBestMove(gs, validMoves):
         print(score)
         gs.undoMove()
             
+    return bestMove
+
+
+def findBestMoveMinMax(gs, validMoves):
+    
+    turnMultiplier = 1 if gs.whiteToMove else -1 # so you are always maximising
+    opponentMinMaxScore = CHECKMATE
+    bestMove = None
+    
+    for playerMove in validMoves:
+        
+        gs.makeMove(playerMove)
+        opponentsMoves = gs.getValidMoves()
+        opponentMaxScore = - CHECKMATE
+        
+        for opponentMove in opponentsMoves:
+            gs.makeMove(opponentMove)
+            if gs.checkmate:
+                score = -turnMultiplier * CHECKMATE
+            elif gs.stalemate:
+                score = STALEMATE
+            else:
+                score =  -turnMultiplier * scoreMaterial(gs.board)
+            if score > opponentMaxScore :
+                opponentMaxScore = score
+            gs.undoMove()
+
+        if opponentMaxScore < opponentMinMaxScore:
+            opponentMinMaxScore = opponentMaxScore
+            bestMove = playerMove
+        gs.undoMove()
+    print(opponentMinMaxScore)
     return bestMove
 # %% --------------------------------------------------------------------------
 #  Score the value of piece
