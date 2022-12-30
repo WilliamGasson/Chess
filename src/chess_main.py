@@ -75,7 +75,7 @@ def main():
 
     # 
     playerOne = True # if human play white, this will be true, if ai it will be false
-    playerTwo = False # if human is plying black this will be true
+    playerTwo = True # if human is plying black this will be true
 
     running = True
     while running:

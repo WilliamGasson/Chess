@@ -62,12 +62,16 @@ def findBestMoveGreedy(gs, validMoves):
     return bestMove
 
 
+## TODO better with recursion
+
 def findBestMoveMinMax(gs, validMoves):
     
     turnMultiplier = 1 if gs.whiteToMove else -1 # so you are always maximising
     opponentMinMaxScore = CHECKMATE
     bestMove = None
     
+    random.shuffle(validMoves)
+
     for playerMove in validMoves:
         
         gs.makeMove(playerMove)
@@ -97,6 +101,7 @@ def findBestMoveMinMax(gs, validMoves):
 # -----------------------------------------------------------------------------
 ## TODO improve scoring method - position
 ## TODO move checkmate and stale mate into score
+## TODO checks have more value - evaluate that first
 def scoreMaterial(board):
     score = 0
     for row in board:
