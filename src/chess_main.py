@@ -37,11 +37,9 @@ SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15  # for animation
 IMAGES = {}
 
-
 # %% --------------------------------------------------------------------------
 # Load images to create a global dictionary of images, only called once
 # -----------------------------------------------------------------------------
-
 
 def loadImage():
     pieces = ["bR", "bN", "bB", "bQ", "bK", "bP", "wR", "wN", "wB", "wQ", "wK", "wP"]
@@ -51,11 +49,9 @@ def loadImage():
         # scale to correct size for board
         IMAGES[piece] = p.transform.scale(IMAGES[piece], (SQ_SIZE, SQ_SIZE))
 
-
 # %% --------------------------------------------------------------------------
 # Main driver, user inputs and graphics
 # -----------------------------------------------------------------------------
-
 
 def main():
     p.init()
@@ -74,7 +70,7 @@ def main():
     gameOver = False
 
     playerOne = True # if human play white, this will be true, if ai it will be false
-    playerTwo = True # if human is plying black this will be true
+    playerTwo = False # if human is plying black this will be true
 
     running = True
     while running:
@@ -147,27 +143,22 @@ def main():
         # TODO more efficient to draw when it changes instead of every frame
         drawGameSate(screen, gs,validMoves, sqSelected)
         
-        if gs.checkmate:
+        if gs.checkmate or gs.stalemate:
             gameOver = True
-            if gs.whiteToMove:
-                print("Black wins by checkmate")
-                drawText(screen, "Black wins by checkmate")
-            else:
-                print("Black wins by checkmate")
-                drawText(screen, "White wins by checkmate")
-        elif gs.stalemate:
-            gameOver = True
-            drawText(screen, "Stalemate")
-
-        drawGameSate(screen, gs, validMoves, sqSelected)
+            drawText(screen, "Stalemate"if gs.stalemate else "Black wins by checkmate" if gs.whiteToMove else "White wins by checkmate")
+            
         clock.tick(MAX_FPS)
         p.display.flip()
 
-
-
 # %% --------------------------------------------------------------------------
-# Draw board
+# Drawing functions
 # -----------------------------------------------------------------------------
+
+def drawGameSate(screen, gs, validMoves, sqSelected):
+    # Set the colours of the board
+    drawBoard(screen)
+    highlightSquares(screen, gs, validMoves, sqSelected)
+    drawPieces(screen, gs.board)
 
 def drawBoard(screen):
     # Set the colours of the board
@@ -181,11 +172,6 @@ def drawBoard(screen):
             p.draw.rect(
                 screen, colour, p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE)
             )
-           
-
-# %% --------------------------------------------------------------------------
-# Highlight square selected and move for pieces selected
-# -----------------------------------------------------------------------------
 
 def highlightSquares(screen, gs, validMoves, sqSelected):
     if sqSelected != ():
@@ -208,12 +194,6 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
                         screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
 
 
-                
-
-# %% --------------------------------------------------------------------------
-# Draw the pieces
-# -----------------------------------------------------------------------------
-
 def drawPieces(screen, board):
     # Loop through the squares
     for r in range(DIMENSION):
@@ -225,10 +205,6 @@ def drawPieces(screen, board):
                     IMAGES[piece], p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE)
                 )
 
-
-# %% --------------------------------------------------------------------------
-# Animate moves
-# -----------------------------------------------------------------------------
 def animateMove(move, screen, board, clock):
     global colours
     dR = move.endRow - move.startRow
@@ -255,11 +231,6 @@ def animateMove(move, screen, board, clock):
         clock.tick(60)
 
 
-
-# %% --------------------------------------------------------------------------
-# Draw text
-# -----------------------------------------------------------------------------
-
 def drawText(screen, text):
     font = p.font.SysFont("Helvitca", 32, True, False)
     textOject = font.render(text, 0, p.Color("Gray"))
@@ -267,17 +238,6 @@ def drawText(screen, text):
     screen.blit(textOject, textLocation)
     textOject = font.render(text, 0, p.Color("Black"))
     screen.blit(textOject, textLocation.move(2,2))
-
-
-# %% --------------------------------------------------------------------------
-# Draw the current state
-# -----------------------------------------------------------------------------
-
-def drawGameSate(screen, gs, validMoves, sqSelected):
-    # Set the colours of the board
-    drawBoard(screen)
-    highlightSquares(screen, gs, validMoves, sqSelected)
-    drawPieces(screen, gs.board)
 
 
 if __name__ == "__main__":

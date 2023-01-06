@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      /* Add some styling for the chess board and pieces */
+      .board {
+        display: flex;
+        flex-wrap: wrap;
+        width: 400px;
+        height: 400px;
+      }
+      .square {
+        width: 50px;
+        height: 50px;
+        background-color: #fff;
+        color: #fff;
+      }
+      .square:nth-child(even) {
+        background-color: #999;
+      }
+      .piece {
+        font-size: 30px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  
+  <body>
+    <div id="board" class="board">
+      <!-- The chess board will be created by JavaScript -->
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const boardElement = document.getElementById('board');
+
+      // Create the chess board
+      for (let i = 0; i < 64; i++) {
+        let square = document.createElement('div');
+        square.className = 'square';
+        boardElement.appendChild(square);
+      }
+
+      // Listen for game state updates from the server
+      socket.on('move', (move) => {
+        // Update the board with the new move
+        updateBoard(move.from, move.to);
+      });
+      socket.on('game over', (result) => {
+        // Display a message to the user when the game is over
+        alert(`Game over: ${result}`);
+      });
+
+      // Add event listeners for clicking on the board to make moves
+      boardElement.addEventListener('click', (event) => {
+        // Find the square that was clicked
+        let square = event.target;
+        if (square.className !== 'square') {
+          return;
+        }
+
+        // Get the row and column of the square
+        let row = Math.floor(square.parentNode.rowIndex / 8);
+        let col = square.cellIndex;
+
+        // Send the move to the server
+        socket.emit('move', {
+          from: { row: row, col: col },
+          to: { row: row, col: col }
+        });
+      });
+
+      function updateBoard(from, to) {
+        // Update the board UI with the new move
+        let fromSquare = boardElement.rows[from.row].cells[from.col];
+        let toSquare = boardElement.rows[to.row].cells[to.col];
+        toSquare.innerHTML = fromSquare.innerHTML;
+        fromSquare.innerHTML = '';
+      }
+    </script>
+  </body>
+</html>
