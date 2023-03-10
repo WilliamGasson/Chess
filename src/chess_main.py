@@ -24,8 +24,8 @@ __version__ = "0.1"
 # -----------------------------------------------------------------------------
 
 import pygame as p
-import chess_engine as ce
-import chess_computer as cc
+import Chess.src.chess_engine as ce
+import Chess.src.chess_computer as cc
 
 # %% --------------------------------------------------------------------------
 #  Constants
